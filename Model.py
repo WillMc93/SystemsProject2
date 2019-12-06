@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# Imports
+# # Imports and Function Definitions
+
+# In[1]:
+
+
+""" Imports """
 import numpy as np
 import matplotlib.pyplot as plt
 
 from itertools import product
+
+
+# In[2]:
+
 
 """ Function Declarations """
 
@@ -27,7 +36,7 @@ def run(params, data={}):
 
 # Returns which enzyme dominated from the given
 # kinetic data
-# Probably, needs a minor rework as it doesn't fit its use currently.
+# Probably, needs a minor rework as it doesn't entirely fit its use currently.
 def dominant(dataset1, dataset2):
     result = 'Indeterminant'
     
@@ -39,9 +48,30 @@ def dominant(dataset1, dataset2):
     
     return result
 
+# Returns the intersection point of the two datasets
+def intersection(dataset1, dataset2, start=100):
+    # lambda function to check who is dominating currently
+    _dominant = lambda x, y: 1 if x > y else 2
+    
+    # assume an intersection point after start val
+    prev = _dominant(dataset1[start], dataset2[start])
+    
+    for point in range(start, len(dataset1)):
+        if _dominant(dataset1[point], dataset2[point]) != prev:
+            return point
+        
+    return None
+
+
+# # Data Simulation
+
+# In[3]:
+
+
 """ Data Simulation """
+
 # Define parameter space
-S = np.linspace(0, 5, 100)
+S = np.linspace(0, 5, 1000)
 Km = np.linspace(0.1, 1, 10)
 Vmax = np.linspace(0.9, 1.1, 2)
 
@@ -53,7 +83,12 @@ params = product(S, Km, Vmax)
 data = run(params)
 
 
-""" Plot 'Em """
+# # Plot
+
+# In[4]:
+
+
+""" Plot All """
 
 # Get Km and Vmax combos from the data
 combos = [(km, vmax) for (km, vmax) in data]
@@ -80,14 +115,28 @@ for c1, c2 in combos:
         done.append(combo)
         done.append(reversed(combo))
         
+    # Try to find interesting ones
+    intersect = intersection(data[c1], data[c2])
+    if not intersect:
+        continue
+        
     count += 1
         
     plt.plot(S, data[c1], label=f'Enzyme 1: Km={c1[0]} Vmax={c1[1]}')
     plt.plot(S, data[c2], label=f'Enzyme 2: Km={c2[0]} Vmax={c2[1]}')
+    plt.plot([], [], label=f'Intersection @ {intersect} mols') # GROSS
     
-    plt.xlabel('Substrate Concentration')
-    plt.ylabel('Reaction Velocity')
+    plt.xlabel('Substrate Concentration (mols)')
+    plt.ylabel('Reaction Velocity (mols/sec)')
     plt.title(f'{count}: Enzyme {dominant(data[c1], data[c2])} dominates')
     plt.legend()
     
     plt.show()   
+    
+
+
+# In[ ]:
+
+
+
+
