@@ -71,7 +71,9 @@ def intersection(dataset1, dataset2, start=100):
 """ Data Simulation """
 
 # Define parameter space
-S = np.linspace(0, 5, 1000)
+MAX_S = 5
+NUM_S = 1000
+S = np.linspace(0, MAX_S, NUM_S)
 Km = np.linspace(0.1, 1, 10)
 Vmax = np.linspace(0.9, 1.1, 2)
 
@@ -120,11 +122,14 @@ for c1, c2 in combos:
     if not intersect:
         continue
         
+    # Convert intersect into concentration
+    concen = intersect / NUM_S * MAX_S
+        
     count += 1
         
     plt.plot(S, data[c1], label=f'Enzyme 1: Km={c1[0]} Vmax={c1[1]}')
     plt.plot(S, data[c2], label=f'Enzyme 2: Km={c2[0]} Vmax={c2[1]}')
-    plt.plot([], [], label=f'Intersection @ {intersect} mols') # GROSS
+    plt.plot([], [], label=f'Intersection @ {concen} mols') # GROSS
     
     plt.xlabel('Substrate Concentration (mols)')
     plt.ylabel('Reaction Velocity (mols/sec)')
