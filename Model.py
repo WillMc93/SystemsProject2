@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from itertools import product
-from random import choices
 
 """ Function Declarations """
 
