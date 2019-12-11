@@ -1,20 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Imports and Function Definitions
-
-# In[1]:
-
-
 """ Imports """
 import numpy as np
 import matplotlib.pyplot as plt
 
 from itertools import product
-
-
-# In[2]:
-
 
 """ Function Declarations """
 
@@ -35,6 +23,7 @@ def run(params, data={}):
     return data
 
 # Returns a list of the generated data for given km, vmax values
+# S is expected to be iterable
 def run_with_data(S, k_m, v_max):
     data = list()
     
@@ -46,7 +35,8 @@ def run_with_data(S, k_m, v_max):
 # Returns the plot for the specified Km pairings
 # kms is a dictionary containing the km values
 # pairs is a list of tuples for which km values we want to plot against each other
-def plot_with_data(S, kms, pairs, vmax=10):
+# S is expected to be iterable
+def plot_with_data(S, kms, pairs, vmax=370):
     
     for pair in pairs:
         chem1 = pair[0]
@@ -68,9 +58,7 @@ def plot_with_data(S, kms, pairs, vmax=10):
 
         plt.show()
 
-# Returns which enzyme dominated from the given
-# kinetic data
-# Probably, needs a minor rework as it doesn't entirely fit its use currently.
+# Returns which enzyme dominated from the given kinetic data
 def dominant(dataset1, dataset2):
     result = 'Indeterminant'
     
@@ -96,12 +84,6 @@ def intersection(dataset1, dataset2, start=100):
         
     return None
 
-
-# # Data Simulation
-
-# In[3]:
-
-
 """ Data Simulation """
 
 # Define parameter space
@@ -118,12 +100,6 @@ params = product(S, Km, Vmax)
 # Generate the data
 data = run(params)
 
-
-# # Plot
-
-# In[4]:
-
-
 """ Plot Interesting Ones """
 # Get Km and Vmax combos from the data
 combos = [(km, vmax) for (km, vmax) in data]
@@ -139,8 +115,6 @@ rejects = list()
 count = 0
 
 # plot each combo of km/vmax
-
-
 for c1, c2 in combos:
     combo = (c1, c2)
     
@@ -178,13 +152,6 @@ for c1, c2 in combos:
     plt.show()   
     
 
-
-# ## Find Examples with no interseciton
-# 
-
-# In[5]:
-
-
 """ Plot Examples with No Intersection """
 
 count = 0
@@ -203,55 +170,32 @@ for c1, c2 in rejects:
     plt.show()   
 
 
-# ## PFK plots
-# 
+""" PFK plots """
 # PFK info - https://www.brenda-enzymes.org/enzyme.php?ecno=2.7.1.56#
-# 
 
-# In[6]:
-
-
-# These come from E. Coli
-# PFK info - https://www.brenda-enzymes.org/enzyme.php?ecno=2.7.1.56#
 PFK_kms = {'ATP': 0.12, 'ADP': 0.28, 'f16b': 6.1, 'f1p': 0.25}
 PFK_pairs = [('ATP', 'ADP'), ('f16b', 'f1p')]
 
 plot_with_data(S, PFK_kms, PFK_pairs)
 
 
-# ## GUT Plots
-# 
-# GUT info - https://www.brenda-enzymes.org/enzyme.php?ecno=2.7.7.9#
-
-# In[8]:
-
+""" GUT Plots """
 
 # These come from Nostoc sp.
-# https://www.brenda-enzymes.org/enzyme.php?ecno=2.7.7.9&Suchword=&reference=&UniProtAcc=&organism%5B%5D=Nostoc+sp.#KM%20VALUE%20[mM]
+# GUT info - https://www.brenda-enzymes.org/enzyme.php?ecno=2.7.7.9#
 
 GUT_kms = {'g1p': 0.742, 'glucose': 3.04, 'UTP': 0.0424, 'diphosphate': 0.376}
-GUT_pairs = [('g1p', 'glucose'), ('UTP', 'diphosphate')]
+GUT_pairs = [('UTP', 'diphosphate'), ('g1p', 'glucose')]
 
 plot_with_data(S, GUT_kms, GUT_pairs)
 
 
-# ## PFK vs GUT Plot
-# 
+""" PFK vs GUT Plot """
+
 # PFK and GUT both act on similar sugars. Km should predict which one is the preferred pathway.
-
-# In[9]:
-
-
 S = np.linspace(0, 10, 10000)
 
 vs_kms = {'GUT': 0.742, 'PFK': 0.25}
 vs_pairs = [('PFK', 'GUT')]
 
 plot_with_data(S, vs_kms, vs_pairs)
-
-
-# In[ ]:
-
-
-
-
